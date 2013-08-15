@@ -33,35 +33,48 @@ var WIDTH = canvas.width;
 var HEIGHT = canvas.height;
 var CENTERX = WIDTH/2;
 var CENTERY = HEIGHT/2;
-var NPARTICLES = 500000;
+var NPARTICLES = 100000;
 var NPROPERTIES = 6;
 var DAMPING = 0.7;
 var TRAIL_DAMPING = 0.1;
+var PAUSE = true;
+var COUNT, particles, velocitiesX, velocitiesY;
 
-var particles = new Float64Array(NPARTICLES*NPROPERTIES);
-var velocitiesX = new Float64Array(WIDTH*HEIGHT);
-var velocitiesY = new Float64Array(WIDTH*HEIGHT);
+window.onload = function() {
+  var gui = new dat.GUI();
+  gui.add(this, 'DAMPING', 0, 1);
+  gui.add(this, 'TRAIL_DAMPING', 0, 1);
+};
 
+var init = function()
+{
+    PAUSE = true;
 
-var count = particles.length;
-var j = 0;
+    particles = new Float64Array(NPARTICLES*NPROPERTIES);
+    velocitiesX = new Float64Array(WIDTH*HEIGHT);
+    velocitiesY = new Float64Array(WIDTH*HEIGHT);
 
-for(var i = 0; i < count; i += NPROPERTIES){
-    particles[i] = CENTERX+Math.cos(j)*(j*.004); //x
-    particles[i+1] = CENTERY+Math.sin(j)*(j*.004); //y
-    particles[i+2] = Math.cos(j); //vx
-    particles[i+3] = Math.sin(j); //vy
-    particles[i+4] = 0; //prevX
-    particles[i+5] = 0; //prevY
-    j++;
+    COUNT = particles.length;
+    var j = 0;
+
+    for(var i = 0; i < COUNT; i += NPROPERTIES){
+        particles[i] = CENTERX+Math.cos(j)*(j*.005); //x
+        particles[i+1] = CENTERY+Math.sin(j)*(j*.005); //y
+        particles[i+2] = 0; //vx
+        particles[i+3] = 0; //vy
+        particles[i+4] = 0; //prevX
+        particles[i+5] = 0; //prevY
+        j++;
+    }
+
+    PAUSE = false;
+    requestAnimationFrame(draw, canvas);
 }
 
 var i, x, y, vx, vy, prevX, prevY, angle, newColor, image, imageData, prevIndex, colorIndex, currentIndex, n1, n2, n3, n4, n5, n6, n7, n8, neighborsAverageX, neighborsAverageY;
-var colr, colg, colb;
 
 function draw(){
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
     image = ctx.getImageData(0, 0, WIDTH, HEIGHT);
     imageData = image.data;
 
@@ -80,7 +93,7 @@ function draw(){
         mouse.prevY = mouse.y;
     }
 
-    for(i = 0, l = count; i < l; i+= NPROPERTIES){
+    for(i = 0, l = COUNT; i < l; i+= NPROPERTIES){
         x = particles[i]
         y = particles[i+1];
         vx = particles[i+2];
@@ -110,10 +123,10 @@ function draw(){
             neighborsAverageY = (velocitiesY[n1]+velocitiesY[n2]+velocitiesY[n3]+velocitiesY[n4]+velocitiesY[n5]+velocitiesY[n6]+velocitiesY[n7]+velocitiesY[n8])/8;
 
             colorIndex = ((x | 0)+(y | 0)*WIDTH)*4; //*4 for rgba
-            newColor = hslToRgb(Math.abs(vx)*Math.abs(vy), 1, 0.5);
-            imageData[colorIndex] = newColor[0];
-            imageData[colorIndex+1] = newColor[1];
-            imageData[colorIndex+2] = newColor[2];
+            imageData[colorIndex] = Math.abs(vx)*255;
+            imageData[colorIndex+1] = Math.abs(vy)*255;
+            imageData[colorIndex+2] = 255;
+            imageData[colorIndex+3] = 255
 
             vx += neighborsAverageX;
             vy += neighborsAverageY;
@@ -132,57 +145,7 @@ function draw(){
     }
 
     ctx.putImageData(image, 0, 0);
-    requestAnimationFrame(draw, canvas);
+    if(!PAUSE){ requestAnimationFrame(draw, canvas); }
 }
 
-requestAnimationFrame(draw, canvas);
-
-function distance(x1, y1, x2, y2) { return Math.sqrt(Math.pow((x1 - y1), 2) + Math.pow((x2 - y2), 2)); }
-
-/**
- * Converts an HSL color value to RGB. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
- * Assumes h, s, and l are contained in the set [0, 1] and
- * returns r, g, and b in the set [0, 255].
- *
- * @param   Number  h       The hue
- * @param   Number  s       The saturation
- * @param   Number  l       The lightness
- * @return  Array           The RGB representation
- */
-
-var f;
-function loopNum(num, max)
-{
-    if(num > max) {
-        f = ((num/max)-((num/max) | 0));
-        num = (max*f) | 0;
-    }
-
-    return num;
-}
-
-var r, g, b, p, q;
-function hslToRgb(h, s, l){
-
-    if(s == 0){
-        r = g = b = l; // achromatic
-    }else{
-        function hue2rgb(p, q, t){
-            if(t < 0) t += 1;
-            if(t > 1) t -= 1;
-            if(t < 1/6) return p + (q - p) * 6 * t;
-            if(t < 1/2) return q;
-            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-            return p;
-        }
-
-        q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1/3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1/3);
-    }
-
-    return [r * 255, g * 255, b * 255];
-}
+init();

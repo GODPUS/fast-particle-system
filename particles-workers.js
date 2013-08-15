@@ -28,12 +28,12 @@ var WIDTH = Math.round(document.body.clientWidth);
 var HEIGHT = Math.round(document.body.clientHeight);
 var CENTERX = WIDTH/2;
 var CENTERY = HEIGHT/2;
-var NUM_PARTICLES = 10000;
+var NUM_PARTICLES = 4000000;
 var NUM_PROPERTIES = 6;
 var DAMPING = 0.7;
 var TRAIL_DAMPING = 0.001;
 
-var NUM_WORKERS = 4;
+var NUM_WORKERS = 8;
 var particlesArray = [];
 var workers = [];
 var velocitiesX = new Float64Array(WIDTH*HEIGHT);
@@ -50,8 +50,8 @@ var j = 0;
 for(i = 0; i < COUNT; i += NUM_PROPERTIES){
     particles[i] = Math.random()*WIDTH; //x
     particles[i+1] = Math.random()*HEIGHT; //y
-    particles[i+2] = Math.random()*10-5; //vx
-    particles[i+3] = Math.random()*10-5; //vy
+    particles[i+2] = Math.random()-0.5; //vx
+    particles[i+3] = Math.random()-0.5; //vy
     particles[i+4] = 0; //prevX
     particles[i+5] = 0; //prevY
     j++;
@@ -126,9 +126,7 @@ function draw(){
         ctxArray[i].fillRect(0, 0, WIDTH, HEIGHT);
 
         workerObject = {
-            command: 'process',
-            velocitiesX: velocitiesX,
-            velocitiesY: velocitiesY
+            command: 'process'
         }
 
         workers[i].postMessage(workerObject);

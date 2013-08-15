@@ -12,7 +12,7 @@ function setGlobals(_particles, _image, _WIDTH, _HEIGHT, _NUM_PROPERTIES, _DAMPI
     workerIndex = _workerIndex;
 }
 
-function process(velocitiesX, velocitiesY){
+function process(){
 
 	for(i = 0; i < particles.length; i+= NUM_PROPERTIES){
         x = particles[i]
@@ -44,7 +44,7 @@ function process(velocitiesX, velocitiesY){
             neighborsAverageX = (velocitiesX[n1]+velocitiesX[n2]+velocitiesX[n3]+velocitiesX[n4]+velocitiesX[n5]+velocitiesX[n6]+velocitiesX[n7]+velocitiesX[n8])/8;
             neighborsAverageY = (velocitiesY[n1]+velocitiesY[n2]+velocitiesY[n3]+velocitiesY[n4]+velocitiesY[n5]+velocitiesY[n6]+velocitiesY[n7]+velocitiesY[n8])/8;
             */
-            
+
             colorIndex = ((x | 0)+(y | 0)*WIDTH)*4; //*4 for rgba
             image.data[colorIndex] = Math.abs(vx)*255;
             image.data[colorIndex+1] = Math.abs(vy)*255;

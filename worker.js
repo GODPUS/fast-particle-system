@@ -8,7 +8,7 @@ self.onmessage = function (e) {
 			break;
 
 			case 'process' :
-				var returnObject = process(e.data.velocitiesX, e.data.velocitiesY);
+				var returnObject = process();
 				self.postMessage(returnObject);
 			break;
 		}
