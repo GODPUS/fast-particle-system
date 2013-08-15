@@ -10,10 +10,25 @@
                 height: 100%;
                 overflow: hidden;
             }
+
+            #canvases {
+                position: absolute;
+            }
+
+            canvas {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                background-color: transparent;
+            }
         </style>
     </head>
     <body>
-        <canvas id="canvas"></canvas>
-        <script src="particles.js"></script>
+        <div id="canvases">
+            
+        </div>
+        
+        <script src="tools.js"></script>
+        <script src="particles-workers.js"></script>
     </body>
 </html>

@@ -33,7 +33,7 @@ var WIDTH = canvas.width;
 var HEIGHT = canvas.height;
 var CENTERX = WIDTH/2;
 var CENTERY = HEIGHT/2;
-var NPARTICLES = 100000;
+var NPARTICLES = 500000;
 var NPROPERTIES = 6;
 var DAMPING = 0.7;
 var TRAIL_DAMPING = 0.1;
@@ -56,8 +56,8 @@ for(var i = 0; i < count; i += NPROPERTIES){
     j++;
 }
 
-
 var i, x, y, vx, vy, prevX, prevY, angle, newColor, image, imageData, prevIndex, colorIndex, currentIndex, n1, n2, n3, n4, n5, n6, n7, n8, neighborsAverageX, neighborsAverageY;
+var colr, colg, colb;
 
 function draw(){
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
@@ -110,10 +110,10 @@ function draw(){
             neighborsAverageY = (velocitiesY[n1]+velocitiesY[n2]+velocitiesY[n3]+velocitiesY[n4]+velocitiesY[n5]+velocitiesY[n6]+velocitiesY[n7]+velocitiesY[n8])/8;
 
             colorIndex = ((x | 0)+(y | 0)*WIDTH)*4; //*4 for rgba
-            newColor = hslToRgb((vx*vy)*100, 1, 0.5);
-            imageData[colorIndex] = Math.abs(vx)*255;
-            imageData[colorIndex+1] = Math.abs(vy)*255;
-            imageData[colorIndex+2] = 255;
+            newColor = hslToRgb(Math.abs(vx)*Math.abs(vy), 1, 0.5);
+            imageData[colorIndex] = newColor[0];
+            imageData[colorIndex+1] = newColor[1];
+            imageData[colorIndex+2] = newColor[2];
 
             vx += neighborsAverageX;
             vy += neighborsAverageY;
@@ -150,6 +150,17 @@ function distance(x1, y1, x2, y2) { return Math.sqrt(Math.pow((x1 - y1), 2) + Ma
  * @param   Number  l       The lightness
  * @return  Array           The RGB representation
  */
+
+var f;
+function loopNum(num, max)
+{
+    if(num > max) {
+        f = ((num/max)-((num/max) | 0));
+        num = (max*f) | 0;
+    }
+
+    return num;
+}
 
 var r, g, b, p, q;
 function hslToRgb(h, s, l){
