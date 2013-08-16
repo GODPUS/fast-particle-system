@@ -33,33 +33,58 @@ var WIDTH = canvas.width;
 var HEIGHT = canvas.height;
 var CENTERX = WIDTH/2;
 var CENTERY = HEIGHT/2;
-var NPARTICLES = 100000;
-var NPROPERTIES = 6;
+var NUM_PARTICLES = 100000;
+var NUM_PROPERTIES = 6;
 var DAMPING = 0.7;
 var TRAIL_DAMPING = 0.1;
 var PAUSE = true;
+var RANDOM_PLACEMENT = false;
 var COUNT, particles, velocitiesX, velocitiesY;
 
 window.onload = function() {
-  var gui = new dat.GUI();
-  gui.add(this, 'DAMPING', 0, 1);
-  gui.add(this, 'TRAIL_DAMPING', 0, 1);
+    var gui = new dat.GUI();
+    gui.add(this, 'DAMPING', 0, 1);
+    gui.add(this, 'TRAIL_DAMPING', 0, 1);
+
+    var randomController = gui.add(this, 'RANDOM_PLACEMENT');
+    randomController.onFinishChange(function(value){ PAUSE = true; });
+
+    var numParticlesController = gui.add(this, 'NUM_PARTICLES').min(1000).max(2000000).step(10000);
+    numParticlesController.onFinishChange(function(value){ PAUSE = true; });
 };
 
-var init = function()
+function restart()
+{
+    particles.length = 0;
+    velocitiesX.length = 0;
+    velocitiesY.length = 0;
+
+    delete particles;
+    delete velocitiesX;
+    delete velocitiesY;
+
+    init();
+}
+
+function init()
 {
     PAUSE = true;
 
-    particles = new Float64Array(NPARTICLES*NPROPERTIES);
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    particles = new Float64Array(NUM_PARTICLES*NUM_PROPERTIES);
     velocitiesX = new Float64Array(WIDTH*HEIGHT);
     velocitiesY = new Float64Array(WIDTH*HEIGHT);
 
     COUNT = particles.length;
     var j = 0;
+    var x, y;
 
-    for(var i = 0; i < COUNT; i += NPROPERTIES){
-        particles[i] = CENTERX+Math.cos(j)*(j*.005); //x
-        particles[i+1] = CENTERY+Math.sin(j)*(j*.005); //y
+    for(var i = 0; i < COUNT; i += NUM_PROPERTIES){
+        if(RANDOM_PLACEMENT){ x = Math.random()*WIDTH; y = Math.random()*HEIGHT; }
+        else{ x = CENTERX+Math.cos(j)*(j*((NUM_PARTICLES/HEIGHT)*.00004)); y = CENTERY+Math.sin(j)*(j*((NUM_PARTICLES/HEIGHT)*.00004)); }
+        particles[i] = x; //x
+        particles[i+1] = y; //y
         particles[i+2] = 0; //vx
         particles[i+3] = 0; //vy
         particles[i+4] = 0; //prevX
@@ -93,7 +118,7 @@ function draw(){
         mouse.prevY = mouse.y;
     }
 
-    for(i = 0, l = COUNT; i < l; i+= NPROPERTIES){
+    for(i = 0, l = COUNT; i < l; i+= NUM_PROPERTIES){
         x = particles[i]
         y = particles[i+1];
         vx = particles[i+2];
@@ -126,7 +151,6 @@ function draw(){
             imageData[colorIndex] = Math.abs(vx)*255;
             imageData[colorIndex+1] = Math.abs(vy)*255;
             imageData[colorIndex+2] = 255;
-            imageData[colorIndex+3] = 255
 
             vx += neighborsAverageX;
             vy += neighborsAverageY;
@@ -145,7 +169,7 @@ function draw(){
     }
 
     ctx.putImageData(image, 0, 0);
-    if(!PAUSE){ requestAnimationFrame(draw, canvas); }
+    if(!PAUSE){ requestAnimationFrame(draw, canvas); }else{ restart(); }
 }
 
 init();
