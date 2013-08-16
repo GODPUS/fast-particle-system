@@ -6,7 +6,7 @@ if(!window.Float64Array){
     }
 }
 
-window.requestAnimFrame = (function(){
+window.requestAnimationFrame = (function(){
     return  window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame   ||
     window.mozRequestAnimationFrame      ||
@@ -33,7 +33,7 @@ var WIDTH = canvas.width;
 var HEIGHT = canvas.height;
 var CENTERX = WIDTH/2;
 var CENTERY = HEIGHT/2;
-var NUM_PARTICLES = 100000;
+var NUM_PARTICLES = 300000;
 var NUM_PROPERTIES = 6;
 var DAMPING = 0.7;
 var TRAIL_DAMPING = 0.1;
@@ -82,7 +82,7 @@ function init()
 
     for(var i = 0; i < COUNT; i += NUM_PROPERTIES){
         if(RANDOM_PLACEMENT){ x = Math.random()*WIDTH; y = Math.random()*HEIGHT; }
-        else{ x = CENTERX+Math.cos(j)*(j*((NUM_PARTICLES/HEIGHT)*.00004)); y = CENTERY+Math.sin(j)*(j*((NUM_PARTICLES/HEIGHT)*.00004)); }
+        else{ x = CENTERX+Math.cos(j)*(j*((NUM_PARTICLES/HEIGHT)*.00001)); y = CENTERY+Math.sin(j)*(j*((NUM_PARTICLES/HEIGHT)*.00001)); }
         particles[i] = x; //x
         particles[i+1] = y; //y
         particles[i+2] = 0; //vx
