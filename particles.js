@@ -96,7 +96,7 @@ function init()
     requestAnimationFrame(draw, canvas);
 }
 
-var i, x, y, vx, vy, prevX, prevY, angle, newColor, image, imageData, prevIndex, colorIndex, currentIndex, n1, n2, n3, n4, n5, n6, n7, n8, neighborsAverageX, neighborsAverageY;
+var i, x, y, vx, vy, xFloor, yFloor, prevX, prevY, angle, newColor, image, imageData, prevIndex, colorIndex, currentIndex, n1, n2, n3, n4, n5, n6, n7, n8, neighborsAverageX, neighborsAverageY;
 
 function draw(){
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
@@ -121,6 +121,8 @@ function draw(){
     for(i = 0, l = COUNT; i < l; i+= NUM_PROPERTIES){
         x = particles[i]
         y = particles[i+1];
+        xFloor = ~~(x);
+        yFloor = ~~(y);
         vx = particles[i+2];
         vy = particles[i+3];
         prevX = particles[i+4];
@@ -128,16 +130,16 @@ function draw(){
 
         if(x > 2 && x < WIDTH-2 && y > 2 && y < HEIGHT-2)
         {   
-            prevIndex = ((prevX | 0)+(prevY | 0)*WIDTH);
-            currentIndex = ((x | 0)+(y | 0)*WIDTH);
-            n1 = ((x+1 | 0)+(y+1 | 0)*WIDTH);
-            n2 = ((x-1 | 0)+(y-1 | 0)*WIDTH);
-            n3 = ((x-1 | 0)+(y+1 | 0)*WIDTH);
-            n4 = ((x+1 | 0)+(y-1 | 0)*WIDTH);
-            n5 = ((x+1 | 0)+(y | 0)*WIDTH);
-            n6 = ((x-1 | 0)+(y | 0)*WIDTH);
-            n7 = ((x | 0)+(y+1 | 0)*WIDTH);
-            n8 = ((x | 0)+(y-1 | 0)*WIDTH);
+            prevIndex = (~~(prevX)+ ~~(prevY)*WIDTH);
+            currentIndex = ((xFloor)+(yFloor)*WIDTH);
+            n1 = ((xFloor+1)+(yFloor+1)*WIDTH);
+            n2 = ((xFloor-1)+(yFloor-1)*WIDTH);
+            n3 = ((xFloor-1)+(yFloor+1)*WIDTH);
+            n4 = ((xFloor+1)+(yFloor-1)*WIDTH);
+            n5 = ((xFloor+1)+(yFloor)*WIDTH);
+            n6 = ((xFloor-1)+(yFloor)*WIDTH);
+            n7 = ((xFloor)+(yFloor+1)*WIDTH);
+            n8 = ((xFloor)+(yFloor-1)*WIDTH);
 
             velocitiesX[currentIndex] = vx;
             velocitiesY[currentIndex] = vy;
@@ -147,7 +149,7 @@ function draw(){
             neighborsAverageX = (velocitiesX[n1]+velocitiesX[n2]+velocitiesX[n3]+velocitiesX[n4]+velocitiesX[n5]+velocitiesX[n6]+velocitiesX[n7]+velocitiesX[n8])/8;
             neighborsAverageY = (velocitiesY[n1]+velocitiesY[n2]+velocitiesY[n3]+velocitiesY[n4]+velocitiesY[n5]+velocitiesY[n6]+velocitiesY[n7]+velocitiesY[n8])/8;
 
-            colorIndex = ((x | 0)+(y | 0)*WIDTH)*4; //*4 for rgba
+            colorIndex = ((xFloor)+(yFloor)*WIDTH)*4; //*4 for rgba
             imageData[colorIndex] = Math.abs(vx)*255;
             imageData[colorIndex+1] = Math.abs(vy)*255;
             imageData[colorIndex+2] = 255;
